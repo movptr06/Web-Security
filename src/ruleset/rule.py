@@ -1,12 +1,12 @@
 import json
 
-from lib.ruleset.validate import check
-from lib.ruleset.action import Action
-from lib.ruleset.severity import Severity
-from lib.ruleset.definition import Definition
-from lib.ruleset.detector import Detector
+from ruleset.validate import check
+from ruleset.action import Action
+from ruleset.severity import Severity
+from ruleset.definition import Definition
+from ruleset.detector import Detector
 
-from lib.http.request import HTTPRequest
+from web.request import HTTPRequest
 
 class Rule():
     def __init__(self, json_ruleset: str):

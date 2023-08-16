@@ -1,8 +1,8 @@
-lib.ruleset.validate
-lib.ruleset.severity
-lib.ruleset.action
-lib.ruleset.definition
-lib.ruleset.detector
-lib.ruleset.rule
+ruleset.validate
+ruleset.severity
+ruleset.action
+ruleset.definition
+ruleset.detector
+ruleset.rule
 
-lib.http.request
+web.request

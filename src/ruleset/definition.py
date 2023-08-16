@@ -1,6 +1,6 @@
 from ipaddress import IPv4Network, IPv6Network
 
-from lib.ruleset.validate import check, validate
+from ruleset.validate import check, validate
 
 class Definition:
     def _ipv4(definition: dict, name: str):

@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 from ipaddress import IPv4Address, IPv6Address, IPv4Network, IPv6Network
 
-from lib.ruleset.validate import validate
-from lib.ruleset.definition import Definition
+from ruleset.validate import validate
+from ruleset.definition import Definition
 
-from lib.http.request import HTTPRequest
+from web.request import HTTPRequest
 
 import re
 
