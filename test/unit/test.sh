@@ -2,16 +2,16 @@
 
 cd "$(dirname $0)"
 
-UNITTEST="./unittest.txt"
+UNITTEST="./test.txt"
 
 readarray -t unittest < $UNITTEST
 
-cd "../src"
+cd ..
 
 function TEST()
 {
     echo $1
-    python3 -m unittest $1
+    python3 -m unittest "unit."$1
     echo
 }
 
