@@ -5,8 +5,8 @@ import socket
 
 HEADER_MAX_SIZE = 1024 * 16 # 16KB
 
-TE = b"transfer-encoding:"
-CL = b"content-length:"
+TE = b"\r\ntransfer-encoding:"
+CL = b"\r\ncontent-length:"
 
 BLOCKED_HEADER = (
     b"HTTP/1.0 403 Forbidden\r\n"
@@ -31,7 +31,7 @@ class HttpProxy:
                 while i < HEADER_MAX_SIZE:
                     data += await reader.read(1)
                     i += 1
-                    if data[-1:] == b"\n":
+                    if data[-2:] == b"\r\n":
                         if data[save:].strip() == b"chunked":
                             break
                         else:
@@ -46,7 +46,7 @@ class HttpProxy:
                 while i < HEADER_MAX_SIZE:
                     data += await reader.read(1)
                     i += 1
-                    if data[-1:] == b"\n":
+                    if data[-2:] == b"\r\n":
                         length = int(data[save:].strip())
                         break
                 else:
@@ -64,7 +64,7 @@ class HttpProxy:
                 while i < HEADER_MAX_SIZE:
                     chunk += await reader.read(1)
                     i += 1
-                    if chunk[-1:] == b"\n":
+                    if chunk[-2:] == b"\r\n":
                         length = int(chunk.strip(), 16)
                         break
                 else:
@@ -109,19 +109,26 @@ class HttpProxy:
 
     async def _bind(self, lhost: str, lport: int):
         async def handler(reader, writer):
-            ip, port = writer.get_extra_info("peername")
+            try:
+                ip, port = writer.get_extra_info("peername")
 
-            data = await HttpProxy._http(reader)
+                data = await HttpProxy._http(reader)
 
-            if(self.handler(data)):
-                client = await asyncio.open_connection(self.rhost, self.rport)
-                await HttpProxy._proxy(writer, client, data)
-            else:
-                await HttpProxy._block(self.block, writer)
+                if(self.handler(data)):
+                    client = await asyncio.open_connection(self.rhost, self.rport)
+                    await HttpProxy._proxy(writer, client, data)
+                else:
+                    await HttpProxy._block(self.block, writer)
 
-            await writer.drain()
+                await writer.drain()
  
-            writer.close()
+                writer.close()
+            except:
+                try:
+                    await HttpProxy._block(self.block, writer)
+                    writer.close()
+                except:
+                    pass
 
         server = await asyncio.start_server(handler, host=lhost, port=lport)
 
@@ -130,3 +137,9 @@ class HttpProxy:
 
     def run(self, lhost: str, lport: int):
         asyncio.run(self._bind(lhost, lport))
+
+def handler(data: bytes):
+    return True
+
+http = HttpProxy(handler, b"<h1>BLOCKED</h1>", "127.0.0.1", 8000)
+http.run("0.0.0.0", 4000)
