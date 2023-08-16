@@ -6,7 +6,7 @@ from io import BytesIO
 
 import json
 
-class HTTPRequest(BaseHTTPRequestHandler):
+class HttpRequest(BaseHTTPRequestHandler):
     def _cookie(cookie: str):
         cookies = SimpleCookie()
         cookies.load(cookie)
@@ -34,14 +34,14 @@ class HTTPRequest(BaseHTTPRequestHandler):
         self.header = self.headers
 
         if "cookie" in self.headers:
-            self.cookie = HTTPRequest._cookie(self.headers["cookie"])
+            self.cookie = HttpRequest._cookie(self.headers["cookie"])
         else:
             self.cookie = None
 
         self.url_resource = urlparse(self.path).path
         self.query_string = urlparse(self.path).query
        
-        self.query_parameter = HTTPRequest._query_parameter(self.query_string)
+        self.query_parameter = HttpRequest._query_parameter(self.query_string)
 
         self.body = self.rfile.read().decode("latin1")
 

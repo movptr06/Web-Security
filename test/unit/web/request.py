@@ -5,10 +5,10 @@ import unittest
 
 class TEST(unittest.TestCase):
     def test_cookie(self):
-        self.assertEqual(HTTPRequest._cookie("a=1; b=2"), {"a": "1", "b": "2"})
+        self.assertEqual(HttpRequest._cookie("a=1; b=2"), {"a": "1", "b": "2"})
 
     def test_query_parameter(self):
-        self.assertEqual(HTTPRequest._query_parameter("a=1"), {"a": ("1", )})
+        self.assertEqual(HttpRequest._query_parameter("a=1"), {"a": ("1", )})
 
     def test_init(self):
         HTTP_REQUEST_GET = (
@@ -20,7 +20,7 @@ class TEST(unittest.TestCase):
             b'\r\n'
         )
 
-        get = HTTPRequest(HTTP_REQUEST_GET, "127.0.0.1")
+        get = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
         self.assertEqual(get.ipv4, IPv4Address("127.0.0.1"))
         self.assertEqual(get.method, "GET")
         self.assertEqual(get.header["host"], "127.0.0.1:8000")
@@ -41,7 +41,7 @@ class TEST(unittest.TestCase):
             b'{"a": 1}'
         )
 
-        post = HTTPRequest(HTTP_REQUEST_POST, "::1")
+        post = HttpRequest(HTTP_REQUEST_POST, "::1")
         self.assertEqual(post.ipv6, IPv6Address("::1"))
         self.assertEqual(post.method, "POST")
         self.assertEqual(post.header["host"], "127.0.0.1:8000")        

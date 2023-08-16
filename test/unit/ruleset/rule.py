@@ -1,6 +1,8 @@
 import unit.config
 from ruleset.rule import *
 
+from web.request import HttpRequest
+
 import unittest
 
 class TEST(unittest.TestCase):
@@ -38,7 +40,7 @@ class TEST(unittest.TestCase):
             b'\r\n'
         )
 
-        get = HTTPRequest(HTTP_REQUEST_GET, "127.0.0.1")
+        get = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
         detected = rule.detect(get)
 
         self.assertEqual(detected.query_parameter, [("id", ['"', '"', '"', '"'])])

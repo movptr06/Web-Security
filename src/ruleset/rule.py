@@ -6,8 +6,6 @@ from ruleset.severity import Severity
 from ruleset.definition import Definition
 from ruleset.detector import Detector
 
-from web.request import HTTPRequest
-
 class Rule():
     def __init__(self, json_ruleset: str):
         rule = json.loads(json_ruleset)

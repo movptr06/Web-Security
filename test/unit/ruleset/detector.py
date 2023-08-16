@@ -146,7 +146,7 @@ class TEST(unittest.TestCase):
             b'\r\n'
         )
 
-        get = HTTPRequest(HTTP_REQUEST_GET, "127.0.0.1")        
+        get = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
         result = detector.detect(get)
 
         self.assertFalse(result.ipv6)
@@ -170,7 +170,7 @@ class TEST(unittest.TestCase):
             b'{"id": "1\' or \'1\' = \'1"}'
         )
 
-        post = HTTPRequest(HTTP_REQUEST_POST, "::1")
+        post = HttpRequest(HTTP_REQUEST_POST, "::1")
         result = detector.detect(post)
 
         self.assertFalse(result.ipv4)

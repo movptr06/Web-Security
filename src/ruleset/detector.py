@@ -6,7 +6,7 @@ from ipaddress import IPv4Address, IPv6Address, IPv4Network, IPv6Network
 from ruleset.validate import validate
 from ruleset.definition import Definition
 
-from web.request import HTTPRequest
+from web.request import HttpRequest
 
 import re
 
@@ -175,7 +175,7 @@ class Detector:
         else:
             self.json_body = PASS
 
-    def detect(self, http: HTTPRequest):
+    def detect(self, http: HttpRequest):
         return Detect(
             self.ipv4(http.ipv4),
             self.ipv6(http.ipv6),
