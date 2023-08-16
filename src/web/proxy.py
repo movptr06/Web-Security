@@ -1,12 +1,15 @@
+#!/usr/bin/env python3
 from typing import *
 
 import asyncio
 import socket
+import sys
 
 HEADER_MAX_SIZE = 1024 * 16 # 16KB
 
 TE = b"\r\ntransfer-encoding:"
 CL = b"\r\ncontent-length:"
+XFF = b"\r\nx-forwarded-for:"
 
 BLOCKED_HEADER = (
     b"HTTP/1.0 403 Forbidden\r\n"
@@ -80,32 +83,44 @@ class HttpProxy:
         else:
             return False # Unreachable
 
-    async def _proxy(writer, client, data: bytes):
-        client_reader, client_writer = client
-        
-        client_writer.write(data)
-        await client_writer.drain()
-        
-        response = await HttpProxy._http(client_reader) 
-        writer.write(response)
-
-        client_writer.close()
-
-    async def _block(block: bytes, writer):
-        buf = b""
-        buf += BLOCKED_HEADER
-        buf += b"Content-Length: " + str(len(block)).encode("latin1") + b"\r\n"
-        buf += b"\r\n"
-        buf += block
-
-        writer.write(buf)
-        
-
     def __init__(self, handler, block: bytes, rhost: str, rport: int):
         self.handler = handler
         self.block = block
         self.rhost = rhost
         self.rport = rport
+
+    async def _proxy(self, writer, client, data: bytes, ip):
+        client_reader, client_writer = client
+
+        end = data.index(b"\r\n\r\n")
+        xff = data[:end].lower().find(XFF)
+        if xff != -1:
+            xff += 2
+            xff_end = xff + data[xff:].index(b"\r\n")
+            xff_data = data[xff:xff_end]
+            xff_data += b", " + ip.encode("latin1")
+
+            data = data[:xff] + xff_data + data[xff_end:]
+        else:
+            xff_data = b"\r\nX-Forwarded-For: " + ip.encode("latin1")
+            data = data[:end] + xff_data + data[end:]
+
+        client_writer.write(data)
+        await client_writer.drain()
+
+        response = await HttpProxy._http(client_reader)
+        writer.write(response)
+
+        client_writer.close()
+
+    async def _block(self, writer):
+        buf = b""
+        buf += BLOCKED_HEADER
+        buf += b"Content-Length: " + str(len(block)).encode("latin1") + b"\r\n"
+        buf += b"\r\n"
+        buf += self.block
+
+        writer.write(buf)
 
     async def _bind(self, lhost: str, lport: int):
         async def handler(reader, writer):
@@ -114,16 +129,16 @@ class HttpProxy:
 
                 data = await HttpProxy._http(reader)
 
-                if(self.handler(data)):
+                if self.handler(data, ip):
                     client = await asyncio.open_connection(self.rhost, self.rport)
-                    await HttpProxy._proxy(writer, client, data)
+                    await self._proxy(writer, client, data, ip)
                 else:
-                    await HttpProxy._block(self.block, writer)
+                    await self._block(writer)
 
                 await writer.drain()
  
                 writer.close()
-            except:
+            except Exception as e:
                 try:
                     await HttpProxy._block(self.block, writer)
                     writer.close()
@@ -138,8 +153,17 @@ class HttpProxy:
     def run(self, lhost: str, lport: int):
         asyncio.run(self._bind(lhost, lport))
 
-def handler(data: bytes):
+def default_handler(data: bytes, ip):
     return True
 
-http = HttpProxy(handler, b"<h1>BLOCKED</h1>", "127.0.0.1", 8000)
-http.run("0.0.0.0", 4000)
+if __name__ == "__main__":
+    if len(sys.argv) < 4:
+        print(f"usage: {sys.argv[0]} LPORT RHOST RPORT")
+        sys.exit(-1)
+
+    LPORT = int(sys.argv[1])
+    RHOST = sys.argv[2]
+    RPORT = int(sys.argv[3])
+
+    http = HttpProxy(default_handler, b"<h1>BLOCKED</h1>", RHOST, RPORT)
+    http.run("0.0.0.0", LPORT)
