@@ -1,2 +1,2 @@
-# SSR-Web-Security
+# SSR-WAF
 Web Application Firewall (WAF)
