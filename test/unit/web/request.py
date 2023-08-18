@@ -16,11 +16,14 @@ class TEST(unittest.TestCase):
             b'User-Agent: curl/7.68.0\r\n'
             b'Accept: */*\r\n'
             b'Cookie: A=1\r\n'
+            b'X-Forwarded-For: 192.168.0.1\r\n'
             b'\r\n'
         )
 
+        ip_addr = [IPv4Address("192.168.0.1"), IPv4Address("127.0.0.1")]
+
         get = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
-        self.assertEqual(get.ipv4, IPv4Address("127.0.0.1"))
+        self.assertEqual(get.ipv4, ip_addr)
         self.assertEqual(get.method, "GET")
         self.assertEqual(get.header["host"], "127.0.0.1:8000")
         self.assertEqual(get.cookie["A"], "1")
@@ -41,7 +44,7 @@ class TEST(unittest.TestCase):
         )
 
         post = HttpRequest(HTTP_REQUEST_POST, "::1")
-        self.assertEqual(post.ipv6, IPv6Address("::1"))
+        self.assertEqual(post.ipv6, [IPv6Address("::1")])
         self.assertEqual(post.method, "POST")
         self.assertEqual(post.header["host"], "127.0.0.1:8000")        
         self.assertEqual(post.cookie["A"], "1")

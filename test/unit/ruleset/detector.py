@@ -7,15 +7,15 @@ class TEST(unittest.TestCase):
         net = IPv4Network("10.0.0.0/8")
         ipv4 = IPv4Address("10.0.0.1")
         
-        self.assertEqual(Detector._ipv4(net)(ipv4), ipv4)
-        self.assertFalse(Detector._ipv4(net)(IPv4Address("127.0.0.1")))
+        self.assertEqual(Detector._ipv4(net)([ipv4]), [ipv4])
+        self.assertFalse(Detector._ipv4(net)([IPv4Address("127.0.0.1")]))
 
     def test_ipv6(self):
         net = IPv6Network("::1")
         ipv6 = IPv6Address("::1")
         
-        self.assertEqual(Detector._ipv6(net)(ipv6), ipv6)
-        self.assertFalse(Detector._ipv6(net)(IPv6Address("::")))
+        self.assertEqual(Detector._ipv6(net)([ipv6]), [ipv6])
+        self.assertFalse(Detector._ipv6(net)([IPv6Address("::")]))
 
     def test_text(self):
         self.assertEqual(Detector._text("GET")("GET"), "GET")
@@ -83,8 +83,8 @@ class TEST(unittest.TestCase):
         ipv4 = IPv4Address("127.0.0.1")
         ipv6 = IPv6Address("::1")
         result = Detector(Definition(tmp))
-        self.assertEqual(result.ipv4(ipv4), ipv4)
-        self.assertEqual(result.ipv6(ipv6), ipv6)
+        self.assertEqual(result.ipv4([ipv4]), [ipv4])
+        self.assertEqual(result.ipv6([ipv6]), [ipv6])
         self.assertEqual(result.method("POST"), "POST")
         self.assertEqual(result.header(header), [("user-agent", [".+"])])
         self.assertEqual(result.cookie(cookie), [("PHPSESSID", ["test"])])
@@ -149,7 +149,7 @@ class TEST(unittest.TestCase):
         result = detector.detect(get)
 
         self.assertFalse(result.ipv6)
-        self.assertEqual(result.ipv4, IPv4Address("127.0.0.1"))
+        self.assertEqual(result.ipv4, [IPv4Address("127.0.0.1")])
         self.assertEqual(result.method, "GET")
         self.assertEqual(result.header, [("user-agent", ["curl"])])
         self.assertEqual(result.cookie, [("admin", ["1", ""])])
@@ -173,7 +173,7 @@ class TEST(unittest.TestCase):
         result = detector.detect(post)
 
         self.assertFalse(result.ipv4)
-        self.assertEqual(result.ipv6, IPv6Address("::1"))
+        self.assertEqual(result.ipv6, [IPv6Address("::1")])
         self.assertEqual(result.header, [("user-agent", ["curl"])])
         self.assertEqual(result.body, ["{", "}"])
         self.assertEqual(result.json_body, [("id", ["'", "'", "'", "'"])])
