@@ -6,6 +6,7 @@ import socket
 import sys
 
 HEADER_MAX_SIZE = 1024 * 16 # 16KB
+SIZE = 1024
 
 TE = b"\r\ntransfer-encoding:"
 CL = b"\r\ncontent-length:"
@@ -17,14 +18,33 @@ BLOCKED_HEADER = (
     b"Content-Type: text/html\r\n"
 )
 
+class Reader:
+    def __init__(self, reader):
+        self.reader = reader
+        self.data = b""
+
+    async def read(self, length):
+        assert length < SIZE
+
+        if len(self.data) >= length:
+            result = self.data[:length]
+            self.data = self.data[length:]
+            return result
+        else:
+            self.data = await self.reader.read(SIZE)
+            assert len(self.data) >= length
+            return await self.read(length)
+
 class HttpProxy:
     async def _http(reader):
         data = b""
         mode = None
 
+        r = Reader(reader)
+
         i = 0
         while i < HEADER_MAX_SIZE:
-            data += await reader.read(1)
+            data += await r.read(1)
             i += 1
 
             if (mode == None or mode == CL) and data[-len(TE):].lower() == TE:
@@ -32,7 +52,7 @@ class HttpProxy:
                 save = i
 
                 while i < HEADER_MAX_SIZE:
-                    data += await reader.read(1)
+                    data += await r.read(1)
                     i += 1
                     if data[-2:] == b"\r\n":
                         if data[save:].strip() == b"chunked":
@@ -47,7 +67,7 @@ class HttpProxy:
                 save = i
 
                 while i < HEADER_MAX_SIZE:
-                    data += await reader.read(1)
+                    data += await r.read(1)
                     i += 1
                     if data[-2:] == b"\r\n":
                         length = int(data[save:].strip())
@@ -65,7 +85,7 @@ class HttpProxy:
                 i = 0
                 chunk = b""
                 while i < HEADER_MAX_SIZE:
-                    chunk += await reader.read(1)
+                    chunk += await r.read(1)
                     i += 1
                     if chunk[-2:] == b"\r\n":
                         length = int(chunk.strip(), 16)
@@ -74,11 +94,11 @@ class HttpProxy:
                     return False
                 if length == 0:
                     return data
-                data += await reader.read(length)
-                await reader.read(2)
+                data += await r.read(length)
+                await r.read(2)
             return data
         elif mode == CL:
-            data += await reader.read(length)
+            data += await r.read(length)
             return data
         else:
             return False # Unreachable
@@ -122,33 +142,38 @@ class HttpProxy:
 
         writer.write(buf)
 
+    async def _session(self, reader, writer):
+        try:
+            ip, port = writer.get_extra_info("peername")
+
+            data = await HttpProxy._http(reader)
+        except Exception as e:
+            return
+
+        result = self.handler(data, ip)
+
+        try:
+            if result:
+                client = await asyncio.open_connection(self.rhost, self.rport)
+                await self._proxy(writer, client, data, ip)
+            else:
+                await self._block(writer)
+
+            await writer.drain()
+
+            writer.close()
+        except Exception as e:
+            return
+
     async def _bind(self, lhost: str, lport: int):
         async def handler(reader, writer):
-            try:
-                ip, port = writer.get_extra_info("peername")
-
-                data = await HttpProxy._http(reader)
-
-                if self.handler(data, ip):
-                    client = await asyncio.open_connection(self.rhost, self.rport)
-                    await self._proxy(writer, client, data, ip)
-                else:
-                    await self._block(writer)
-
-                await writer.drain()
- 
-                writer.close()
-            except Exception as e:
-                try:
-                    await HttpProxy._block(self.block, writer)
-                    writer.close()
-                except:
-                    pass
+            await self._session(reader,writer)
 
         server = await asyncio.start_server(handler, host=lhost, port=lport)
 
         async with server:
             await server.serve_forever()
+
 
     def run(self, lhost: str, lport: int):
         asyncio.run(self._bind(lhost, lport))
