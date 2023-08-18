@@ -14,7 +14,7 @@ XFF = b"\r\nx-forwarded-for:"
 
 BLOCKED_HEADER = (
     b"HTTP/1.0 403 Forbidden\r\n"
-    b"Server: SSR Web Security\r\n"
+    b"Server: SSR WAF\r\n"
     b"Content-Type: text/html\r\n"
 )
 
