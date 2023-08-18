@@ -23,15 +23,24 @@ class HttpRequest(BaseHTTPRequestHandler):
         self.raw_requestline = self.rfile.readline()
         self.parse_request()
 
-        try:
-            self.ipv4 = IPv4Address(ip)
-            self.ipv6 = None
-        except AddressValueError:
-            self.ipv4 = None
-            self.ipv6 = IPv6Address(ip)
-
         self.method = self.command
         self.header = self.headers
+
+        self.ipv4 = []
+        self.ipv6 = []
+
+        ip_list = []
+
+        if "x-forwarded-for" in self.headers:
+            ip_list.extend([x.strip() for x in self.headers["x-forwarded-for"].split(",")])
+        
+        ip_list.append(ip)
+
+        for ip_addr in ip_list:
+            try:
+                self.ipv4.append(IPv4Address(ip_addr))
+            except:
+                self.ipv6.append(IPv6Address(ip_addr))
 
         if "cookie" in self.headers:
             self.cookie = HttpRequest._cookie(self.headers["cookie"])

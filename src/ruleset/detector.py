@@ -25,21 +25,32 @@ class Detect:
 
 class Detector:
     def _ipv4(net: IPv4Network):
-        def detect(data: IPv4Address):
+        def detect(data: List[IPv4Address]):
             if data == None: return False
-            return data if data in net else False
+            
+            for ip_addr in data:
+                if ip_addr in net: return data
+
+            return False
+
         return detect
 
     def _ipv6(net: IPv6Network):
-        def detect(data: IPv6Address):
+        def detect(data: List[IPv6Address]):
             if data == None: return False
-            return data if data in net else False
+
+            for ip_addr in data:
+                if ip_addr in net: return data
+
+            return False
+
         return detect
 
     def _text(text: str):
         def detect(data: str):
             if data == None: return False
             return data if data == text else False
+        
         return detect
 
     def _regexp(regexp: str):
