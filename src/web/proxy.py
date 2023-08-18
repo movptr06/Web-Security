@@ -174,7 +174,6 @@ class HttpProxy:
         async with server:
             await server.serve_forever()
 
-
     def run(self, lhost: str, lport: int):
         asyncio.run(self._bind(lhost, lport))
 
