@@ -1,4 +1,3 @@
-import unit.config
 from ruleset.rule import *
 
 from web.request import HttpRequest

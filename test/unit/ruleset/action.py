@@ -1,4 +1,3 @@
-import unit.config
 from ruleset.action import *
 
 import unittest

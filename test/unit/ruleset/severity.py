@@ -1,4 +1,3 @@
-import unit.config
 from ruleset.severity import *
 
 import unittest

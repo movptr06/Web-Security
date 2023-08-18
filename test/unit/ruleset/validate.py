@@ -1,4 +1,3 @@
-import unit.config
 from ruleset.validate import *
 
 import unittest

@@ -1,4 +1,3 @@
-import unit.config
 from web.request import *
 
 import unittest
