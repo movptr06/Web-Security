@@ -52,13 +52,15 @@ class Config:
                 for allow in config["allow"]
             ]
 
-        self.rules = []
+        rules = []
         for rule_config in config["rules"]:
             rule_list = Config._load_rule(rule_config["file"])
             for rule in rule_list:
                 if "action" in rule_config.keys():
                     rule.action = Action.serialize(rule_config["action"])
-            self.rules += rule_list
+            rules += rule_list
+
+        self.ruleset = RuleSet(rules)
 
     def allow(self, ip, ipv4, ipv6, user_agent):
         for net in self.forward:
