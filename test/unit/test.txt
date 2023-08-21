@@ -4,5 +4,6 @@ ruleset.action
 ruleset.definition
 ruleset.detector
 ruleset.rule
+ruleset.ruleset
 
 web.request
