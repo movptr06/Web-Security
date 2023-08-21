@@ -30,7 +30,11 @@ class Config:
         ]
 
     def allow(self, ip, ipv4, ipv6, user_agent):
-        if ip in self.forward:
+        for net in self.forward:
+            if ip in net:
+                forward = True
+
+        if forward:
             ip_list = [ip] + ipv4 + ipv6
         else:
             ip_list = [ip]
@@ -38,8 +42,11 @@ class Config:
         for addr in ip_list:
             for ipv4_, ipv6_, user_agent_ in self.allowlist:
                 if user_agent_ == user_agent or not user_agent:
-                    return True
-                if ipv4_ == ipv4 or ipv6_ == ipv6:
-                    return True
+                    if not ipv4_ and not ipv6_:
+                        return True
+                    if ipv4_ and addr in ipv4_:
+                        return True
+                    if ipv6_ and addr in ipv6_:
+                        return True
 
         return False
