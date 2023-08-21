@@ -7,6 +7,7 @@ from web.request import HttpRequest
 
 class RuleSet:
     def __init__(self, rules: List[Rule]):
+        self.ruleset = rules
         self.rules = []
 
         for rule in rules:
