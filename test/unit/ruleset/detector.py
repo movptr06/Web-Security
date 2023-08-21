@@ -113,9 +113,8 @@ class TEST(unittest.TestCase):
         self.assertEqual(result.json_body(data), r)
 
     def test_detect(self):
-        tmp = {
+        GET_RULE = {
             "ipv4Network": "127.0.0.0/8",
-            "ipv6Network": "::1",
             "method": "GET",
             "header": {
                 "User-Agent": "curl"
@@ -127,14 +126,10 @@ class TEST(unittest.TestCase):
             "queryString": "id",
             "queryParameter": {
                 "*" : "-[0-9]+"
-            },
-            "body": "[{}]",
-            "jsonBody": {
-                "*": "['\"]"
             }
         }
 
-        detector = Detector(Definition(tmp))
+        detector = Detector(Definition(GET_RULE))
 
         HTTP_REQUEST_GET = (
             b'GET /admin?id=-1 HTTP/1.1\r\n'
@@ -157,11 +152,21 @@ class TEST(unittest.TestCase):
         self.assertEqual(result.query_string, ["id"])
         self.assertEqual(result.query_parameter, [("id", ["-1"])])
 
+        POST_RULE = {
+            "ipv6Network": "::1",
+            "body": "[{}]",
+            "jsonBody": {
+                "*": "['\"]"
+            }
+        }
+
+        detector = Detector(Definition(POST_RULE))
+
         HTTP_REQUEST_POST = (
             b'POST / HTTP/1.1\r\n'
             b'Host: 127.0.0.1:8000\r\n'
             b'User-Agent: curl/7.68.0\r\n'
-            b'Accept: */*\r\n'
+            b'Acicept: */*\r\n'
             b'Cookie: A=1\r\n'
             b'Content-Type: application/json\r\n'
             b'Content-Length: 8\r\n'
@@ -174,6 +179,5 @@ class TEST(unittest.TestCase):
 
         self.assertFalse(result.ipv4)
         self.assertEqual(result.ipv6, [IPv6Address("::1")])
-        self.assertEqual(result.header, [("user-agent", ["curl"])])
         self.assertEqual(result.body, ["{", "}"])
         self.assertEqual(result.json_body, [("id", ["'", "'", "'", "'"])])

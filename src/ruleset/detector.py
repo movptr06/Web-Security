@@ -125,6 +125,7 @@ class Detector:
         def PASS(data):
             # None != False
             return None
+        self.none = PASS
 
         # ipv4 : ipv4
         if definition.ipv4 != None:
@@ -187,7 +188,7 @@ class Detector:
             self.json_body = PASS
 
     def detect(self, http: HttpRequest):
-        return Detect(
+        r = Detect(
             self.ipv4(http.ipv4),
             self.ipv6(http.ipv6),
             self.method(http.method),
@@ -199,3 +200,26 @@ class Detector:
             self.body(http.body),
             self.json_body(http.json_body)
         )
+
+        if self.ipv4 != self.none and not r.ipv4:
+            return False
+        if self.ipv6 != self.none and not r.ipv6:
+            return False
+        if self.method != self.none and not r.method:
+            return False
+        if self.header != self.none and not r.header:
+            return False
+        if self.cookie != self.none and not r.cookie:
+            return False
+        if self.url_resource != self.none and not r.url_resource:
+            return False
+        if self.query_string != self.none and not r.query_string:
+            return False
+        if self.query_parameter != self.none and not r.query_parameter:
+            return False
+        if self.body != self.none and not r.body:
+            return False
+        if self.json_body != self.none and not r.json_body:
+            return False
+
+        return r
