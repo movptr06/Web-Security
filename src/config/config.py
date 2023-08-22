@@ -75,7 +75,7 @@ class Config:
 
         if "block" in config:
             with open(config["block"], "rt") as f:
-            self.block = f.read()
+                self.block = f.read()
         else:
             self.block = BLOCK
 
