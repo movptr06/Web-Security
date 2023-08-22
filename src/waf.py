@@ -75,6 +75,7 @@ def main():
             f.write(data)
 
     logger = Logger(output)
+    
     handler = Handler(
         config.ruleset,
         config.allow,
@@ -82,6 +83,10 @@ def main():
         config.action,
         logger
     )
+
+    proxy = Proxy(handler, config.block, argv.RHOST, argv.RPORT)
+    
+    proxy.run("0.0.0.0", argv.port)
 
 if __name__ == "__main__":
     main()

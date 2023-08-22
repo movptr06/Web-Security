@@ -8,6 +8,10 @@ from ruleset.ruleset import RuleSet
 from ruleset.action import Action
 from ruleset.rule import Rule
 
+BLOCK = """
+<h1>BLOCKED</h1>
+"""[1:-1]
+
 class Config:
     def _load_rule(filename):
         filenames = []
@@ -68,6 +72,12 @@ class Config:
         else:
             self.size = 8 * 1024 # 8KB
             self.oversize = Action.ALLOW
+
+        if "block" in config:
+            with open(config["block"], "rt") as f:
+            self.block = f.read()
+        else:
+            self.block = BLOCK
 
     def allow(self, ip, ipv4, ipv6, user_agent):
         for net in self.forward:
