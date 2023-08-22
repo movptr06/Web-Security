@@ -18,7 +18,7 @@ class Handler:
             if self.action == Action.BLOCK:
                 return False
             elif self.action == Action.COUNT:
-                self.logger(http, self.action, None)
+                self.logger(http, None, None)
             http.body = ""
             self.json_body = None
 
@@ -30,7 +30,7 @@ class Handler:
             ):
             return True
 
-        action, detected = self.ruleset.detect(http)
+        rule, detected = self.ruleset.detect(http)
         if detected:
-            self.logger(http, action, detected)
-        return action != Action.BLOCK
+            self.logger(http, rule, detected)
+        return rule.action != Action.BLOCK

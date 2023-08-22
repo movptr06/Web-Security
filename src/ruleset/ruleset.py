@@ -18,5 +18,5 @@ class RuleSet:
         for rule in self.rules:
             detected = rule.detect(http)
             if detected:
-                return (rule.action, detected)
+                return (rule, detected)
         return False

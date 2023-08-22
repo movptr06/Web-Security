@@ -73,7 +73,7 @@ class TEST(unittest.TestCase):
         )
 
         get = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
-        action, detected = ruleset.detect(get)
+        rule, detected = ruleset.detect(get)
 
-        self.assertEqual(action, Action.BLOCK)
+        self.assertEqual(rule.action, Action.BLOCK)
         self.assertEqual(detected.query_parameter, [("id", ['"', '"', '"', '"'])])
