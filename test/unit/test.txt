@@ -9,3 +9,5 @@ ruleset.ruleset
 con.handler
 
 web.request
+
+log.logger
