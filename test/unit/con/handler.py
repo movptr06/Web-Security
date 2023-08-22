@@ -9,8 +9,8 @@ from web.request import HttpRequest
 import unittest
 
 class TEST(unittest.TestCase):
-    def _logger(self, ip, http, rule, detected):
-        self.save = (ip, http, rule, detected)
+    def _logger(self, http, action, detected):
+        self.save = (http, action, detected)
 
     def _allow(self, ip, ipv4, ipv6, user_agent):
         return False
@@ -52,7 +52,7 @@ class TEST(unittest.TestCase):
 
         self.assertFalse(result)
 
-        ip, http, rule, detected = self.save
+        http, action, detected = self.save
 
         http_request = HttpRequest(HTTP_REQUEST_GET, "127.0.0.1")
         self.assertEqual(dict(http.header), dict(http_request.header))
