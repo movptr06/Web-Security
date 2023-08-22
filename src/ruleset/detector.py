@@ -12,8 +12,8 @@ import re
 
 @dataclass
 class Detect:
-    ipv4: str
-    ipv6: str
+    ipv4: IPv4Address
+    ipv6: IPv6Address
     method: str
     header: List[Tuple[str, List[str]]]
     cookie: List[Tuple[str, List[str]]]
@@ -23,13 +23,39 @@ class Detect:
     body: List[str]
     json_body: List[Tuple[str, List[str]]]
 
+    def logfmt(self):
+        log = {}
+
+        if self.ipv4:
+            log["ipv4"] = str(self.ipv4)
+        if self.ipv6:
+            log["ipv6"] = str(self.ipv6)
+        if self.method:
+            log["method"] = self.method
+        if self.header:
+            log["header"] = self.header
+        if self.cookie:
+            log["cookie"] = self.cookie
+        if self.url_resource:
+            log["url_resource"] = self.url_resource
+        if self.query_string:
+            log["query_string"] = self.query_string
+        if self.query_parameter:
+            log["query_parameter"] = self.query_parameter
+        if self.body:
+            log["body"] = self.body
+        if self.json_body:
+            log["json_body"] = self.json_body
+
+        return log
+
 class Detector:
     def _ipv4(net: IPv4Network):
         def detect(data: List[IPv4Address]):
             if data == None: return False
             
             for ip_addr in data:
-                if ip_addr in net: return data
+                if ip_addr in net: return ip_addr
 
             return False
 
@@ -40,7 +66,7 @@ class Detector:
             if data == None: return False
 
             for ip_addr in data:
-                if ip_addr in net: return data
+                if ip_addr in net: return ip_addr
 
             return False
 
