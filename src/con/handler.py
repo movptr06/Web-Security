@@ -15,10 +15,9 @@ class Handler:
         http = HttpRequest(data, ip)
 
         if len(http.body) > self.size:
+            assert self.action != Action.COUNT
             if self.action == Action.BLOCK:
                 return False
-            elif self.action == Action.COUNT:
-                self.logger(http, None, None)
             http.body = ""
             self.json_body = None
 
