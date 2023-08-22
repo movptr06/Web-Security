@@ -11,6 +11,9 @@ class TEST(unittest.TestCase):
     def _logger(self, http, action, detected):
         self.save = (http, action, detected)
 
+    def _allow(self, ip, ipv4, ipv6, user_agent):
+        return False
+
     def test_detect(self):
         self.save = False
 
@@ -31,7 +34,7 @@ class TEST(unittest.TestCase):
             rule
         ])
 
-        handler = Handler(ruleset, self._logger)
+        handler = Handler(ruleset, self._allow, self._logger)
 
         HTTP_REQUEST_GET = (
             b'GET /bbs/board.php?id=1"%20or%20"1"%20=%20"1 HTTP/1.1\r\n'
