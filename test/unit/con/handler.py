@@ -1,6 +1,7 @@
 from con.handler import *
 
 from ruleset.ruleset import RuleSet
+from ruleset.action import Action
 from ruleset.rule import Rule
 
 from web.request import HttpRequest
@@ -34,7 +35,9 @@ class TEST(unittest.TestCase):
             rule
         ])
 
-        handler = Handler(ruleset, self._allow, self._logger)
+        handler = Handler(
+            ruleset, self._allow, 1024 * 8, Action.ALLOW, self._logger
+        )
 
         HTTP_REQUEST_GET = (
             b'GET /bbs/board.php?id=1"%20or%20"1"%20=%20"1 HTTP/1.1\r\n'

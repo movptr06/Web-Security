@@ -62,6 +62,13 @@ class Config:
 
         self.ruleset = RuleSet(rules)
 
+        if "size" in config:
+            self.size = config["size"]["max"]
+            self.oversize = Action.serialize(config["size"]["action"])
+        else:
+            self.size = 8 * 1024 # 8KB
+            self.oversize = Action.ALLOW
+
     def allow(self, ip, ipv4, ipv6, user_agent):
         for net in self.forward:
             if ip in net:
