@@ -5,7 +5,7 @@ import asyncio
 import socket
 import sys
 
-HEADER_MAX_SIZE = 1024 * 16 # 16KB
+HEADER_MAX_SIZE = 1024 * 4 # 4KB
 SIZE = 1024
 
 TE = b"\r\ntransfer-encoding:"
