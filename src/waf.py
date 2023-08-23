@@ -14,6 +14,8 @@ import os
 
 VERSION = "1.0"
 
+OUTPUT = ""
+
 def args():
     parser = ArgumentParser(
         description="Web Security " + VERSION
@@ -65,14 +67,11 @@ def main():
 
     config = Config(argv.file)
 
-    if not os.path.isfile(argv.log):
-        with open(argv.log, "wt") as f:
-            f.write("[\n\n]")
-
     def output(data):
-        with open(argv.log, "at") as f:
-            f.seek(f.tell() -2)
-            f.write(data)
+        global OUTPUT
+        with open(argv.log, "wt") as f:
+            OUTPUT += data
+            f.write("[\n" + OUTPUT + "\n]\n")
 
     logger = Logger(output)
     
