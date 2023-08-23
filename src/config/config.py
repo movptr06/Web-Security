@@ -55,6 +55,8 @@ class Config:
                 )
                 for allow in config["allow"]
             ]
+        else:
+            self.allowlist = []
 
         rules = []
         for rule_config in config["rules"]:

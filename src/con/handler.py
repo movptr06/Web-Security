@@ -1,3 +1,5 @@
+from ipaddress import IPv4Address, IPv6Address
+
 from ruleset.ruleset import RuleSet
 from ruleset.action import Action
 
@@ -21,15 +23,26 @@ class Handler:
             http.body = ""
             self.json_body = None
 
+        try:
+            addr = IPv4Address(ip)
+        except:
+            addr = IPv6Address(ip)
+
         if self.allow(
-            ip,
+            addr,
             http.ipv4,
             http.ipv6,
             http.header["user-agent"]
             ):
             return True
 
-        rule, detected = self.ruleset.detect(http)
+        result = self.ruleset.detect(http)
+        if result:
+            rule, detected = result
+        else:
+            rule, detected = (False, False)
         if detected:
             self.logger(http, rule, detected)
-        return rule.action != Action.BLOCK
+            return rule.action != Action.BLOCK
+        else:
+            return True

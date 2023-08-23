@@ -65,7 +65,7 @@ def main():
 
     config = Config(argv.file)
 
-    if os.path.isfile(argv.log):
+    if not os.path.isfile(argv.log):
         with open(argv.log, "wt") as f:
             f.write("[\n\n]")
 
@@ -81,10 +81,15 @@ def main():
         config.allow,
         config.size,
         config.oversize,
-        logger
+        logger.detected
     )
 
-    proxy = HttpProxy(handler.handler, config.block, argv.RHOST, argv.RPORT)
+    proxy = HttpProxy(
+        handler.handler,
+        config.block,
+        argv.RHOST,
+        argv.RPORT
+    )
     
     proxy.run("0.0.0.0", argv.port)
 
