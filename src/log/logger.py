@@ -29,5 +29,5 @@ class Logger:
             }
         }]
         self.output(
-            json.dumps(log, ensure_ascii=False, indent=4)[2:-2]
+            json.dumps(log, indent=4)[2:-2]
         )
