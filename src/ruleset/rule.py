@@ -1,4 +1,4 @@
-import json
+import yaml
 
 from ruleset.validate import check
 from ruleset.action import Action
@@ -7,8 +7,8 @@ from ruleset.definition import Definition
 from ruleset.detector import Detector
 
 class Rule():
-    def __init__(self, json_ruleset: str):
-        rule = json.loads(json_ruleset)
+    def __init__(self, ruleset: str):
+        rule = yaml.safe_load(ruleset)
 
         assert check(rule, "name", str)
         assert check(rule, "description", str)
