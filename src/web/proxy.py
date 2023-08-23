@@ -6,6 +6,7 @@ import socket
 import sys
 
 HEADER_MAX_SIZE = 1024 * 4 # 4KB
+
 SIZE = 1024
 
 TE = b"\r\ntransfer-encoding:"
@@ -24,15 +25,13 @@ class Reader:
         self.data = b""
 
     async def read(self, length):
-        assert length < SIZE
-
         if len(self.data) >= length:
             result = self.data[:length]
             self.data = self.data[length:]
             return result
         else:
-            self.data = await self.reader.read(SIZE)
-            assert len(self.data) >= length
+            size = SIZE if SIZE > length else length
+            self.data += await self.reader.read(size)
             return await self.read(length)
 
 class HttpProxy:
