@@ -80,6 +80,8 @@ class Detector:
         return detect
 
     def _regexp(regexp: str):
+        if regexp[-1] == "\n":
+            regexp = regexp[:-1]
         p = re.compile(regexp)
 
         def detect(data: str):
