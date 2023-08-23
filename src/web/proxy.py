@@ -136,7 +136,7 @@ class HttpProxy:
     async def _block(self, writer):
         buf = b""
         buf += BLOCKED_HEADER
-        buf += b"Content-Length: " + str(len(block)).encode("latin1") + b"\r\n"
+        buf += b"Content-Length: " + str(len(self.block)).encode("latin1") + b"\r\n"
         buf += b"\r\n"
         buf += self.block
 
