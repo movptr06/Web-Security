@@ -84,7 +84,7 @@ def main():
         logger
     )
 
-    proxy = HttpProxy(handler, config.block, argv.RHOST, argv.RPORT)
+    proxy = HttpProxy(handler.handler, config.block, argv.RHOST, argv.RPORT)
     
     proxy.run("0.0.0.0", argv.port)
 
