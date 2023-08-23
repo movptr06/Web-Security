@@ -34,7 +34,7 @@ def args():
     parser.add_argument(
         "-p",
         "--port",
-        dest="PORT",
+        dest="port",
         type=int,
         default=80,
         help="Port number"
@@ -80,11 +80,11 @@ def main():
         config.ruleset,
         config.allow,
         config.size,
-        config.action,
+        config.oversize,
         logger
     )
 
-    proxy = Proxy(handler, config.block, argv.RHOST, argv.RPORT)
+    proxy = HttpProxy(handler, config.block, argv.RHOST, argv.RPORT)
     
     proxy.run("0.0.0.0", argv.port)
 
