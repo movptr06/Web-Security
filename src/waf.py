@@ -70,7 +70,10 @@ def main():
     def output(data):
         global OUTPUT
         with open(argv.log, "wt") as f:
-            OUTPUT += data
+            if OUTPUT:
+                OUTPUT += ",\n" + data
+            else:
+                OUTPUT = data
             f.write("[\n" + OUTPUT + "\n]\n")
 
     logger = Logger(output)
