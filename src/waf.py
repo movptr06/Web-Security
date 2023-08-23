@@ -63,9 +63,14 @@ def args():
     return parser.parse_args()
 
 def main():
+    global OUTPUT
     argv = args()
 
     config = Config(argv.file)
+
+    if os.path.isfile(argv.log):
+        with open(argv.log, "rt") as f:
+            OUTPUT = f.read()
 
     def output(data):
         global OUTPUT
