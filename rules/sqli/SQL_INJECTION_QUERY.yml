@@ -1,0 +1,12 @@
+name: SQL_INJECTION_QUERY
+description: SQL injection attack on query parameters
+severity: HIGH
+action: BLOCK
+
+definition:
+    queryParameter:
+        "*": |
+            (?i)(['"]|/\*|\*/|--|#|
+            SELECT|INSERT|UPDATE|DELETE|
+            WHERE|FROM|ORDER BY|GROUP BY|
+            HAVING|UNION|SLEEP|SUBSTR)

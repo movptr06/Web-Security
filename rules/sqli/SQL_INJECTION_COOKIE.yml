@@ -1,0 +1,12 @@
+name: SQL_INJECTION_COOKIE
+description: SQL injection attack on cookies
+severity: HIGH
+action: BLOCK
+
+definition:
+    cookie:
+        "*": |
+            (?i)(['"]|/\*|\*/|--|#|
+            SELECT|INSERT|UPDATE|DELETE|
+            WHERE|FROM|ORDER BY|GROUP BY|
+            HAVING|UNION|SLEEP|SUBSTR)

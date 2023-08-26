@@ -1,0 +1,11 @@
+name: SQL_INJECTION_BODY
+description: SQL injection attack on request body
+severity: HIGH
+action: COUNT
+
+definition:
+    body: |
+        (?i)(['"]|/\*|\*/|--|#|
+        SELECT|INSERT|UPDATE|DELETE|
+        WHERE|FROM|ORDER BY|GROUP BY|
+        HAVING|UNION|SLEEP|SUBSTR)
