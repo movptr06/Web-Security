@@ -4,7 +4,7 @@ severity: MEDIUM
 action: BLOCK
 
 definition:
-    body:
+    body: |
         (?i)(javascript|
         on[a-z]+=|style=|
         <script>|eval)

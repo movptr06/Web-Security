@@ -4,7 +4,7 @@ severity: MEDIUM
 action: BLOCK
 
 definition:
-    queryString:
+    queryString: |
         (?i)(javascript|
         on[a-z]+=|style=|
         <script>|eval)
