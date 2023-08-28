@@ -1,0 +1,10 @@
+name: XSS_QUERY
+description: XSS attack on query string
+severity: MEDIUM
+action: BLOCK
+
+definition:
+    queryString:
+        (?i)(javascript|
+        on[a-z]+=|style=|
+        <script>|eval)

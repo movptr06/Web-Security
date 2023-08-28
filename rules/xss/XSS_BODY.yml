@@ -1,0 +1,10 @@
+name: XSS_BODY
+description: XSS attack on request body
+severity: MEDIUM
+action: BLOCK
+
+definition:
+    body:
+        (?i)(javascript|
+        on[a-z]+=|style=|
+        <script>|eval)

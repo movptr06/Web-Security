@@ -1,0 +1,11 @@
+name: XSS_HEADER
+description: XSS attack on headers
+severity: MEDIUM
+action: BLOCK
+
+definition:
+    header:
+        "*": |
+            (?i)(javascript|
+            on[a-z]+=|style=|
+            <script>|eval)

@@ -1,3 +1,4 @@
 rules:
     - file: rules/sqli
     - file: rules/ssrf
+    - file: rules/xss
