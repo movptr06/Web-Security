@@ -1,7 +1,7 @@
 from ipaddress import IPv4Address, IPv6Address, AddressValueError
 from http.server import BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 from io import BytesIO
 
 import json
@@ -24,16 +24,16 @@ class HttpRequest(BaseHTTPRequestHandler):
         self.parse_request()
 
         self.method = self.command
-        self.header = self.headers
+        self.header = {x.lower(): unquote(y) for x, y in self.headers.items()}
 
         self.ipv4 = []
         self.ipv6 = []
 
         ip_list = []
 
-        if "x-forwarded-for" in self.headers:
+        if "x-forwarded-for" in self.header:
             ip_list.extend([x.strip() for x in self.headers["x-forwarded-for"].split(",")])
-        
+
         ip_list.append(ip)
 
         for ip_addr in ip_list:
@@ -47,12 +47,14 @@ class HttpRequest(BaseHTTPRequestHandler):
         else:
             self.cookie = None
 
-        self.url_resource = urlparse(self.path).path
+        self.url_resource = unquote(urlparse(self.path).path)
         self.query_string = urlparse(self.path).query
        
         self.query_parameter = HttpRequest._query_parameter(self.query_string)
 
-        self.body = self.rfile.read().decode("latin1")
+        self.query_string = unquote(self.query_string)
+
+        self.body = unquote(self.rfile.read().decode("latin1"))
 
         try:
             self.json_body = json.loads(self.body)
