@@ -1,0 +1,11 @@
+name: SSRF_BODY
+description: SSRF attack on request body
+severity: HIGH
+action: BLOCK
+
+definition:
+    body:
+        (?i)(https?://[^a-z]|
+        0\.0\.0\.0|127\..*|
+        ::1|localhost|jar:|
+        [^https?]://)

@@ -1,0 +1,12 @@
+name: SSRF_QUERY
+description: SSRF attack on query parameters
+severity: HIGH
+action: BLOCK
+
+definition:
+    queryParameter:
+        "*": |
+            (?i)(https?://[^a-z]|
+            0\.0\.0\.0|127\..*|
+            ::1|localhost|jar:|
+            [^https?]://)
